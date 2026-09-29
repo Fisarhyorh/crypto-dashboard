@@ -32,7 +32,7 @@ Favorites are stored in `localStorage` rather than a database, which is a delibe
 
 1. Clone the repo:
    ```
-   git clone https://github.com/YOUR-USERNAME/crypto-dashboard.git
+   git clone https://github.com/Fisarhyorh/crypto-dashboard.git
    cd crypto-dashboard
    ```
 
@@ -47,8 +47,7 @@ Favorites are stored in `localStorage` rather than a database, which is a delibe
    ```
    COINGECKO_API_KEY=your_demo_api_key
    ```
-   No `NEXT_PUBLIC_` prefix — this key stays server-side only.
-
+ 
 5. Run the dev server:
    ```
    npm run dev
