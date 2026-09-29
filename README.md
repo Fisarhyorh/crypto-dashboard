@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Crypto Dashboard
 
-## Getting Started
+A live cryptocurrency price dashboard with search, sorting, favorites, and per-coin price history — built to demonstrate handling real async state (loading, errors, retries) rather than just displaying data that's already there.
 
-First, run the development server:
+**Live demo:** _add your Vercel link here once deployed_
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- **Live market data** — top 50 coins by market cap, auto-refreshing every 45 seconds
+- **Loading skeletons** — placeholder rows shown on first load, not just a spinner
+- **Error handling with retry** — a failed request shows a clear error and a retry button rather than a blank screen or a console error
+- **Search** — filter by coin name or symbol
+- **Sortable columns** — click Price or 24h to sort, click again to reverse direction
+- **Favorites** — star coins to save them, persisted in the browser via localStorage, with a toggle to show favorites only
+- **Price history chart** — click any coin for a 7-day price chart
+- **Server-side API key handling** — CoinGecko requests are proxied through Next.js API routes so the API key is never exposed to the browser
+
+## Tech stack
+
+- **Framework:** Next.js (App Router) + TypeScript
+- **Styling:** Tailwind CSS
+- **Charts:** Recharts
+- **Data:** CoinGecko API (Demo plan)
+
+## Why these choices
+
+CoinGecko's fully keyless public tier is aggressively rate-limited and, in practice, gets blocked outright by their CDN firewall for many requests. This project uses a free Demo API key instead, which is far more reliable — but an API key should never be called directly from the browser, since anyone can read it out of the network tab. So every CoinGecko request is proxied through a Next.js API route (`app/api/coins` and `app/api/coins/[id]/history`), which attaches the key server-side. The browser only ever talks to our own server, never to CoinGecko directly.
+
+Favorites are stored in `localStorage` rather than a database, which is a deliberate scope choice for a project with no authentication — it means favorites are per-browser, not per-account, and won't follow a user across devices. A database-backed version would require adding auth, which was intentionally left out here since that's already demonstrated in a separate project.
+
+## Running it locally
+
+1. Clone the repo:
+   ```
+   git clone https://github.com/YOUR-USERNAME/crypto-dashboard.git
+   cd crypto-dashboard
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Get a free Demo API key at [coingecko.com](https://www.coingecko.com) (Developer's Dashboard → create a new API key).
+
+4. Create a `.env.local` file in the project root:
+   ```
+   COINGECKO_API_KEY=your_demo_api_key
+   ```
+   No `NEXT_PUBLIC_` prefix — this key stays server-side only.
+
+5. Run the dev server:
+   ```
+   npm run dev
+   ```
+   Visit `http://localhost:3000`.
+
+## Project structure
+
+```
+app/
+  page.tsx                       — main dashboard: search, sort, favorites, table
+  api/coins/route.ts              — proxies the top-50 coin list from CoinGecko
+  api/coins/[id]/history/route.ts — proxies 7-day price history for one coin
+components/
+  CoinRowSkeleton.tsx              — loading placeholder rows
+  CoinDetailModal.tsx              — price chart modal
+lib/
+  coingecko.ts                     — client-side fetch helpers
+  favorites.ts                     — localStorage helpers for favorites
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Known limitations
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Favorites are per-browser (localStorage), not tied to a user account.
+- CoinGecko's Demo plan has its own rate limits; heavy traffic on a deployed version could hit them faster than a single local user would.
