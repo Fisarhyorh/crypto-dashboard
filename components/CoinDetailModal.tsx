@@ -104,7 +104,10 @@ export default function CoinDetailModal({ coin, onClose }: Props) {
                     fontSize: 12,
                   }}
                   labelStyle={{ color: 'var(--ink-soft)' }}
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, 'Price']}
+                  formatter={(value) => [
+                    `$${Number(value ?? 0).toLocaleString()}`,
+                    'Price'
+                  ]}
                 />
                 <Line
                   type="monotone"
